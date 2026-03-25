@@ -60,18 +60,15 @@ st.markdown("---")
 tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"])
 
 with tab_subir:
-    # Nuevo aviso de duración con link a conversor
+    # Único cartel de aviso, claro y al grano
     st.markdown("""
     <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
-        ⚠️ <b>Aviso de duración:</b> Si tu video dura más de 1 hora, por favor convertilo a MP3 antes de subirlo para evitar que el sistema se sature. 
-        <br><a href="https://cloudconvert.com/mp4-to-mp3" target="_blank" style="color: #60a5fa; text-decoration: none;">🔗 Página gratuita para hacerlo</a>
+        ⚠️ <b>¡Atención con las clases largas!</b><br>
+        Si tu video dura <b>más de 1 hora</b>, por favor convertilo a MP3 antes de subirlo. Los videos pesados saturan el sistema y pueden dar error.
+        <br><a href="https://cloudconvert.com/mp4-to-mp3" target="_blank" style="color: #60a5fa; text-decoration: none;">🔗 Clic acá para convertir video a MP3 gratis</a>
     </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
     <div style="background-color: transparent; padding: 12px; font-size: 13px; border-left: 4px solid #17a2b8; margin-bottom: 15px; color: #a0aab2;">
-        💡 <b>Tip :</b> Te recomendamos grabar con el grabador de voz de tu celu antes de grabar audio desde la pagina. <br>
-         Tambien si subis un video o un audio muy largo, el sistema va a tardar un rato en cargarse.
+        💡 <b>Tip:</b> Para grabar clases enteras, lo más seguro es usar la grabadora de voz de tu celu y subir el audio directamente acá.
     </div>
     """, unsafe_allow_html=True)
     
