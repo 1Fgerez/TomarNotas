@@ -12,7 +12,8 @@ st.set_page_config(page_title="Analizador de Audio y Video", page_icon="📚")
 if "resumen_generado" not in st.session_state:
     st.session_state.resumen_generado = None
 
-st.title("📚 Analizador de Audio y Video")
+# Reemplazá el st.title por esto para que el link quede limpio:
+st.markdown("<h1 style='text-align: left;'>📚 Analizador de Audio y Video</h1>", unsafe_allow_html=True)
 st.markdown("Subí el audio/video de lo que quieras y obtené un breve resumen.")
 st.markdown("---")
 
