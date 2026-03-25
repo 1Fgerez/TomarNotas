@@ -60,7 +60,7 @@ tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"]
 
 with tab_subir:
     st.markdown("""
-    <div style="background-color: transparent; padding: 12px; font-size: 12px; border-left: 4px solid #17a2b8; margin-bottom: 15px;">
+    <div style="background-color: transparent; padding: 10px; font-size: 12px; border-left: 2px solid #17a2b8; margin-bottom: 15px;">
         💡 <b>Tip :</b> Te recomendamos grabar con el grabador de voz de tu celu antes de grabar audio desde la pagina
     </div>
     """, unsafe_allow_html=True)
@@ -69,7 +69,7 @@ with tab_subir:
 
 with tab_grabar:
     st.markdown("""
-    <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
+    <div style="background-color: transparent; padding: 10px; font-size: 12px; border-left: 2px solid #ffc107; margin-bottom: 15px;">
         ⚠️ <b>Aviso importante:</b> Usá esta opción solo para audios CORTOS. Si apagás la pantalla del celu o cambiás de app, el navegador cortará la grabación por seguridad.
     </div>
     """, unsafe_allow_html=True)
