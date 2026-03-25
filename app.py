@@ -62,7 +62,8 @@ tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"]
 with tab_subir:
     st.markdown("""
     <div style="background-color: transparent; padding: 10px; font-size: 12px; border-left: 2px solid #17a2b8; margin-bottom: 15px;">
-        💡 <b>Tip :</b> Te recomendamos grabar con el grabador de voz de tu celu antes de grabar audio desde la pagina
+        💡 Tambien si subis un video o un audio muy largo, el sistema va a tardar un rato en cargarse.
+        <b>Tip :</b> Te recomendamos grabar con el grabador de voz de tu celu antes de grabar audio desde la pagina.
     </div>
     """, unsafe_allow_html=True)
     
