@@ -6,13 +6,13 @@ import tempfile
 from google import genai
 
 # Configuración básica de la página
-st.set_page_config(page_title="Herramienta para resumenes", page_icon="📚")
+st.set_page_config(page_title="Analizador de Audio y Video", page_icon="📚")
 
 # --- LA MAGIA: INICIALIZAR LA MEMORIA DE LA APP ---
 if "resumen_generado" not in st.session_state:
     st.session_state.resumen_generado = None
 
-st.title("📚 Agente de Notas con IA")
+st.title("📚 Analizador de Audio y Video")
 st.markdown("Subí el audio o video de lo que quieras y pedile a la IA exactamente lo que necesitás.")
 st.markdown("---")
 
@@ -20,7 +20,7 @@ st.markdown("---")
 api_key_usuario = st.text_input(
     "🔑 Pegá tu API Key de Google acá:", 
     type="password", 
-    help="Es gratis. Se usa solo durante esta sesión para generar tu resumen."
+    help="Es gratis. Se usa solo durante esta sesión para generar tu análisis."
 )
 
 with st.expander("❓ ¿Cómo encontrar o crear tu API Key gratuita?"):
@@ -34,7 +34,7 @@ with st.expander("❓ ¿Cómo encontrar o crear tu API Key gratuita?"):
 # 2. Datos del tema
 materia = st.text_input("📝 ¿De qué tema es el video o el audio?")
 
-# --- NUEVO: 3. Instrucciones personalizables ---
+# 3. Instrucciones personalizables
 prompt_por_defecto = """Generá un resumen detallado, claro y estructurado en formato Markdown con las siguientes secciones:
 1. **Tema Principal**: Un párrafo resumen general.
 2. **Puntos Clave**: Los conceptos más importantes explicados de forma sencilla.
@@ -46,6 +46,9 @@ instrucciones = st.text_area(
     value=prompt_por_defecto, 
     height=150
 )
+
+# --- NUEVO: La aclaración y el tip de formato que sumaste ---
+st.caption("💡 **Aclaración:** Puedes cambiar este recuadro para que genere lo que desees. Otro ejemplo podría ser pedirle que solo te haga un resumen de fórmulas, etc.  \n📝 **Tip de formato:** Utilizá `** **` para destacar los títulos o palabras clave (Ej: **Título**).")
 
 # 4. El botón para subir el archivo
 archivo_subido = st.file_uploader("📂 Subí el archivo", type=["mp3", "mp4", "m4a", "wav"])
@@ -84,7 +87,6 @@ if st.button("🚀 Procesar Archivo"):
                     st.stop()
 
             with st.spinner("🧠 El agente está analizando el contenido..."):
-                # Unimos el tema con las instrucciones exactas del usuario
                 prompt_final = f"El tema central de este archivo es: {materia}.\n\nInstrucciones a seguir:\n{instrucciones}"
                 
                 response = client.models.generate_content(
