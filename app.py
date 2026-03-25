@@ -19,10 +19,20 @@ api_key_usuario = st.text_input(
     help="Es gratis. Se usa solo durante esta sesión para generar tu resumen."
 )
 
+# Ventana desplegable con el instructivo
+with st.expander("❓ ¿Cómo encontrar o crear tu API Key gratuita?"):
+    st.markdown("""
+    1. Entrá a [Google AI Studio](https://aistudio.google.com/app/apikey).
+    2. Iniciá sesión con tu cuenta de Google (no pide tarjeta de crédito).
+    3. Hacé clic en el botón azul **'Create API key'**.
+    4. Copiá esa clave larga y pegala en el recuadro de arriba. 
+    """)
+
 # 2. Datos de la materia
-materia = st.text_input("📝 ¿De qué tema es el video o la grabacion de audio?")
+materia = st.text_input("📝 ¿De qué materia es la clase? (Ej: Paradigmas, SSL, Análisis 2)")
 
 # 3. El botón para subir el archivo
+st.info("💡 Consejo: Para clases largas (ej: 3 horas), te recomendamos subir el archivo en formato AUDIO (.mp3 o .m4a). Pesa muchísimo menos que un video y la IA lo procesa más rápido.")
 archivo_subido = st.file_uploader("📂 Subí el audio o video de la clase", type=["mp3", "mp4", "m4a", "wav"])
 
 st.markdown("---")
@@ -38,11 +48,10 @@ if st.button("🚀 Generar Resumen"):
         st.warning("⚠️ Por favor subí un archivo de la clase.")
     else:
         try:
-            # Inicializar Gemini con la llave que puso tu amigo/a
+            # Inicializar Gemini con la llave que puso el usuario
             client = genai.Client(api_key=api_key_usuario)
             
-            # MAGIA TÉCNICA: Streamlit guarda los archivos subidos en la memoria RAM.
-            # Como Gemini necesita leer un archivo físico, creamos un archivo temporal oculto.
+            # Crear archivo temporal
             with st.spinner("Preparando archivo..."):
                 extension = archivo_subido.name.split('.')[-1]
                 with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmp_file:
@@ -50,7 +59,7 @@ if st.button("🚀 Generar Resumen"):
                     ruta_temp = tmp_file.name
 
             # Subir a Google
-            with st.spinner("☁️ Subiendo a la nube de Google (puede tardar un poquito)..."):
+            with st.spinner("☁️ Subiendo a la nube de Google (puede tardar un ratito dependiendo del peso del archivo)..."):
                 archivo_gemini = client.files.upload(file=ruta_temp)
 
                 while archivo_gemini.state.name == 'PROCESSING':
@@ -84,10 +93,18 @@ if st.button("🚀 Generar Resumen"):
             st.markdown("### 📋 Tu Resumen:")
             st.info(response.text)
             
+            # --- NUEVO: Botón de descarga ---
+            st.download_button(
+                label="⬇️ Descargar Resumen en Markdown",
+                data=response.text,
+                file_name=f"Resumen_{materia.replace(' ', '_')}.md",
+                mime="text/markdown"
+            )
+            
             # Limpieza: Borrar rastros para no ocupar espacio
             client.files.delete(name=archivo_gemini.name)
             os.remove(ruta_temp)
             
         except Exception as e:
-            # Si el usuario pone una API key falsa o hay un error, le avisamos sin que se rompa la app
-            st.error(f"Ups, ocurrió un error: {e}")
+            # Manejo de errores amigable
+            st.error(f"Ups, ocurrió un error: Asegurate de que tu API Key sea correcta o intentá de nuevo. (Detalle técnico: {e})")
