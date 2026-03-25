@@ -29,7 +29,11 @@ with st.expander("❓ ¿Cómo encontrar o crear tu API Key gratuita?"):
     """)
 
 # 2. Datos de la materia
-materia = st.text_input("📝 Indique el tema del video o del audio")
+materia = st.text_input("📝 ¿De qué materia es la clase? (Ej: Paradigmas, SSL, Análisis 2)")
+
+# 3. El botón para subir el archivo
+st.info("💡 Consejo: Para clases largas (ej: 3 horas), te recomendamos subir el archivo en formato AUDIO (.mp3 o .m4a). Pesa muchísimo menos que un video y la IA lo procesa más rápido.")
+archivo_subido = st.file_uploader("📂 Subí el audio o video de la clase", type=["mp3", "mp4", "m4a", "wav"])
 
 st.markdown("---")
 
