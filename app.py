@@ -83,7 +83,7 @@ archivo_final = audio_grabado if audio_grabado else archivo_subido
 st.markdown("---")
 
 # 5. El motor de la app
-if st.button("🚀 Procesar Archivo"):
+if st.button("🚀 Descargar Archivo"):
     if not api_key_usuario:
         st.warning("⚠️ Necesitás ingresar una API Key para continuar.")
     elif not materia:
