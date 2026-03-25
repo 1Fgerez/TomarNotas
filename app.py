@@ -12,7 +12,7 @@ st.set_page_config(page_title="Analizador de Audio y Video", page_icon="📚")
 if "resumen_generado" not in st.session_state:
     st.session_state.resumen_generado = None
 
-# Reemplazá el st.title por esto para que el link quede limpio:
+# Título en HTML para que el link de la web quede limpio y corto
 st.markdown("<h1 style='text-align: left;'>📚 Analizador de Audio y Video</h1>", unsafe_allow_html=True)
 st.markdown("Subí el audio/video de lo que quieras y obtené un breve resumen.")
 st.markdown("---")
@@ -24,7 +24,7 @@ api_key_usuario = st.text_input(
     help="Es gratis. Se usa solo durante esta sesión para generar tu análisis."
 )
 
-# Desplegable hecho a medida con letra más chica y sutil
+# Desplegable sutil para la ayuda
 st.markdown("""
 <details style="margin-bottom: 15px; margin-top: -5px;">
     <summary style="font-size: 13px; color: #a0aab2; cursor: pointer;">❓ ¿No tenés una API Key? Tocá acá para ver cómo crearla gratis</summary>
@@ -56,14 +56,22 @@ instrucciones = st.text_area(
 st.caption("💡 **Aclaración:** Podés cambiar este recuadro para que genere lo que desees. Otro ejemplo podría ser pedirle que solo te haga un resumen de fórmulas, etc.  \n📝 **Tip de formato:** Utilizá `** **` para destacar los títulos o palabras clave (Ej: **Título**).")
 st.markdown("---")
 
-# --- 4. Opciones de entrada (Carteles con fondo transparente) ---
+# --- 4. Opciones de entrada (Pestañas con el nuevo aviso de duración) ---
 tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"])
 
 with tab_subir:
+    # Nuevo aviso de duración con link a conversor
     st.markdown("""
-    <div style="background-color: transparent; padding: 10px; font-size: 12px; border-left: 2px solid #17a2b8; margin-bottom: 15px;">
-        💡 Tambien si subis un video o un audio muy largo, el sistema va a tardar un rato en cargarse.
-        <b>Tip :</b> Te recomendamos grabar con el grabador de voz de tu celu antes de grabar audio desde la pagina.
+    <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
+        ⚠️ <b>Aviso de duración:</b> Si tu video dura más de 1 hora, por favor convertilo a MP3 antes de subirlo para evitar que el sistema se sature. 
+        <br><a href="https://cloudconvert.com/mp4-to-mp3" target="_blank" style="color: #60a5fa; text-decoration: none;">🔗 Página gratuita para hacerlo</a>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="background-color: transparent; padding: 12px; font-size: 13px; border-left: 4px solid #17a2b8; margin-bottom: 15px; color: #a0aab2;">
+        💡 <b>Tip :</b> Te recomendamos grabar con el grabador de voz de tu celu antes de grabar audio desde la pagina. <br>
+         Tambien si subis un video o un audio muy largo, el sistema va a tardar un rato en cargarse.
     </div>
     """, unsafe_allow_html=True)
     
@@ -71,8 +79,8 @@ with tab_subir:
 
 with tab_grabar:
     st.markdown("""
-    <div style="background-color: transparent; padding: 10px; font-size: 12px; border-left: 2px solid #ffc107; margin-bottom: 15px;">
-        ⚠️ <b>Aviso importante:</b> Usá esta opción solo para audios CORTOS. Si apagás la pantalla del celu o cambiás de app, el navegador cortará la grabación por seguridad.
+    <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #f8d7da; margin-bottom: 15px;">
+        ⚠️ <b>Aviso importante:</b> Usá esta opción solo para audios CORTOS. Si apagás la pantalla del celu o cambiás de app, la grabación se cortará.
     </div>
     """, unsafe_allow_html=True)
     
@@ -99,63 +107,36 @@ if st.button("🚀 Procesar Archivo"):
             
             with st.spinner("Preparando archivo..."):
                 extension = archivo_final.name.split('.')[-1] if hasattr(archivo_final, 'name') else 'wav'
-                
                 with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmp_file:
                     tmp_file.write(archivo_final.getvalue())
                     ruta_temp = tmp_file.name
 
-            with st.spinner("☁️ Subiendo a la nube de Google (puede tardar un ratito)..."):
+            with st.spinner("☁️ Subiendo a Google (clases largas pueden tardar unos minutos)..."):
                 archivo_gemini = client.files.upload(file=ruta_temp)
-
                 while archivo_gemini.state.name == 'PROCESSING':
                     time.sleep(5)
                     archivo_gemini = client.files.get(name=archivo_gemini.name)
 
-                if archivo_gemini.state.name == 'FAILED':
-                    st.error("Hubo un error al procesar el archivo en Google.")
-                    st.stop()
-
-            with st.spinner("🧠 El agente está analizando el contenido..."):
-                prompt_final = f"El tema central de este archivo es: {materia}.\n\nInstrucciones a seguir:\n{instrucciones}"
-                
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=[archivo_gemini, prompt_final]
-                )
+            with st.spinner("🧠 Analizando contenido..."):
+                prompt_final = f"Tema: {materia}.\n\nInstrucciones:\n{instrucciones}"
+                response = client.models.generate_content(model='gemini-2.5-flash', contents=[archivo_gemini, prompt_final])
                 
             st.success("¡Análisis listo!")
-            
             st.session_state.resumen_generado = response.text
-            
             client.files.delete(name=archivo_gemini.name)
             os.remove(ruta_temp)
             
         except Exception as e:
-            st.error(f"Ups, ocurrió un error. Asegurate de que tu API Key sea correcta. (Detalle: {e})")
+            st.error(f"Error: El archivo es muy pesado o la clave es incorrecta. Intentá con un MP3 más liviano. (Detalle: {e})")
 
 # --- MOSTRAR EL RESUMEN Y EL BOTÓN ---
 if st.session_state.resumen_generado:
     st.markdown("### 📋 Tu Resultado:")
-    
     st.markdown(st.session_state.resumen_generado)
-    
+    st.markdown("---")
     
     texto_html = markdown.markdown(st.session_state.resumen_generado)
-    
-    plantilla_html = f"""
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-            body {{ font-family: Arial, sans-serif; line-height: 1.6; margin: 40px auto; max-width: 800px; padding: 20px; color: #333; }}
-            h1, h2, h3 {{ color: #1a73e8; }}
-        </style>
-    </head>
-    <body>
-        {texto_html}
-    </body>
-    </html>
-    """
+    plantilla_html = f"<html><body style='font-family: Arial; padding: 40px; line-height: 1.6;'>{texto_html}</body></html>"
     
     st.download_button(
         label="⬇️ Descargar Archivo",
@@ -163,5 +144,4 @@ if st.session_state.resumen_generado:
         file_name=f"Analisis_{materia.replace(' ', '_')}.html",
         mime="text/html"
     )
-    
-    st.caption("💡 **Para guardarlo como PDF:** Hacé clic en descargar archivo, abrí el archivo que se baja y ahí apretá `Ctrl + P` para 'Guardar como PDF'.")
+    st.caption("💡 **Tip:** Abrí el archivo descargado y apretá `Ctrl + P` para guardarlo como un PDF perfecto.")
