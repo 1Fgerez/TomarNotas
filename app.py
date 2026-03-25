@@ -127,10 +127,10 @@ if st.session_state.resumen_generado:
     
     # 3. El nuevo botón de descarga
     st.download_button(
-        label="⬇️ Descargar Resumen (Formato Web/PDF)",
+        label="⬇️ Descargar Resumen",
         data=plantilla_html,
         file_name=f"Resumen_{materia.replace(' ', '_')}.html",
         mime="text/html"
     )
     
-    st.caption("💡 **Para guardarlo como PDF:** Hacé clic en descargar, abrí el archivo que se baja (se va a abrir en tu navegador súper prolijo) y ahí apretá `Ctrl + P` para 'Guardar como PDF'. ¡Queda perfecto!")
+    st.caption("💡 **Para guardarlo como PDF:** Hacé clic en descargar, abrí el archivo que se baja y ahí apretá `Ctrl + P` para 'Guardar como PDF'.")
