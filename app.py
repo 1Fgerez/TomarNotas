@@ -13,7 +13,7 @@ if "resumen_generado" not in st.session_state:
     st.session_state.resumen_generado = None
 
 st.title("📚 Analizador de Audio y Video")
-st.markdown("Subí el audio o video de lo que quieras y pedile a la IA exactamente lo que necesitás.")
+st.markdown("Subí el audio o video de lo que quieras y obtené un breve resumen.")
 st.markdown("---")
 
 # 1. El "Peaje" de la API Key
