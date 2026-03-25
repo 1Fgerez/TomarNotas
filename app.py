@@ -12,8 +12,8 @@ st.set_page_config(page_title="Herramienta para resumenes", page_icon="📚")
 if "resumen_generado" not in st.session_state:
     st.session_state.resumen_generado = None
 
-st.title("📚 Resumidor de Clases con IA")
-st.markdown("Subí el audio o video de lo que quieras y obtené un breve resumen.")
+st.title("📚 Agente de Notas con IA")
+st.markdown("Subí el audio o video de lo que quieras y pedile a la IA exactamente lo que necesitás.")
 st.markdown("---")
 
 # 1. El "Peaje" de la API Key
@@ -31,22 +31,37 @@ with st.expander("❓ ¿Cómo encontrar o crear tu API Key gratuita?"):
     4. Copiá esa clave larga y pegala en el recuadro de arriba. 
     """)
 
-# 2. Datos de la materia
-materia = st.text_input("📝 ¿De qué tema es el video o el audio? ")
+# 2. Datos del tema
+materia = st.text_input("📝 ¿De qué tema es el video o el audio?")
 
-# 3. El botón para subir el archivo
-archivo_subido = st.file_uploader("📂 Subí el audio o video de la clase", type=["mp3", "mp4", "m4a", "wav"])
+# --- NUEVO: 3. Instrucciones personalizables ---
+prompt_por_defecto = """Generá un resumen detallado, claro y estructurado en formato Markdown con las siguientes secciones:
+1. **Tema Principal**: Un párrafo resumen general.
+2. **Puntos Clave**: Los conceptos más importantes explicados de forma sencilla.
+3. **Avisos o Fechas**: Mencioná si se habló de tareas, entregas o bibliografía.
+4. **Conclusión**: Un cierre breve."""
+
+instrucciones = st.text_area(
+    "✍️ ¿Qué querés que haga el agente? (Podés dejar este texto o escribir el tuyo):", 
+    value=prompt_por_defecto, 
+    height=150
+)
+
+# 4. El botón para subir el archivo
+archivo_subido = st.file_uploader("📂 Subí el archivo", type=["mp3", "mp4", "m4a", "wav"])
 
 st.markdown("---")
 
-# 4. El motor de la app
-if st.button("🚀 Generar Resumen"):
+# 5. El motor de la app
+if st.button("🚀 Procesar Archivo"):
     if not api_key_usuario:
         st.warning("⚠️ Necesitás ingresar una API Key para continuar.")
     elif not materia:
-        st.warning("⚠️ Por favor ingresá el nombre de la materia.")
+        st.warning("⚠️ Por favor ingresá de qué tema trata el archivo.")
+    elif not instrucciones:
+        st.warning("⚠️ Las instrucciones para la IA no pueden estar vacías.")
     elif not archivo_subido:
-        st.warning("⚠️ Por favor subí un archivo de la clase.")
+        st.warning("⚠️ Por favor subí un archivo.")
     else:
         try:
             client = genai.Client(api_key=api_key_usuario)
@@ -68,25 +83,18 @@ if st.button("🚀 Generar Resumen"):
                     st.error("Hubo un error al procesar el archivo en Google.")
                     st.stop()
 
-            with st.spinner("🧠 El agente está escuchando y redactando los apuntes..."):
-                prompt = f"""
-                Sos un asistente de estudio universitario experto. Analizá esta grabación de la clase de la materia {materia}.
-                Generá un resumen detallado, claro y estructurado en formato Markdown con las siguientes secciones:
-                
-                1. **Tema Principal**: Un párrafo resumen de qué trató la clase.
-                2. **Conceptos Clave**: Los puntos teóricos más importantes.
-                3. **Avisos, Tareas o Bibliografía**: Detallá si el profesor mencionó fechas, libros o entregas. Si no, omití esto.
-                4. **Foco de atención**: Mencioná si se hizo énfasis en algo particular para los exámenes.
-                """
+            with st.spinner("🧠 El agente está analizando el contenido..."):
+                # Unimos el tema con las instrucciones exactas del usuario
+                prompt_final = f"El tema central de este archivo es: {materia}.\n\nInstrucciones a seguir:\n{instrucciones}"
                 
                 response = client.models.generate_content(
                     model='gemini-2.5-flash',
-                    contents=[archivo_gemini, prompt]
+                    contents=[archivo_gemini, prompt_final]
                 )
                 
-            st.success("¡Resumen listo!")
+            st.success("¡Análisis listo!")
             
-            # --- GUARDAMOS EL TEXTO EN LA MEMORIA DE LA PÁGINA ---
+            # GUARDAMOS EL TEXTO EN LA MEMORIA DE LA PÁGINA
             st.session_state.resumen_generado = response.text
             
             client.files.delete(name=archivo_gemini.name)
@@ -97,18 +105,14 @@ if st.button("🚀 Generar Resumen"):
 
 # --- MOSTRAR EL RESUMEN Y EL BOTÓN ---
 if st.session_state.resumen_generado:
-    st.markdown("### 📋 Tu Resumen:")
+    st.markdown("### 📋 Tu Resultado:")
     
-    # Cambiamos st.info por st.markdown para que se vea mucho mejor en la pantalla de la página
     st.markdown(st.session_state.resumen_generado)
-    
     st.markdown("---")
     
-    # --- LA MAGIA DEL HTML PARA EL PDF ---
-    # 1. Traducimos los ## y ** a formato web real
+    # LA MAGIA DEL HTML PARA EL PDF
     texto_html = markdown.markdown(st.session_state.resumen_generado)
     
-    # 2. Le ponemos un poco de diseño (letra Arial, márgenes prolijos)
     plantilla_html = f"""
     <html>
     <head>
@@ -124,11 +128,10 @@ if st.session_state.resumen_generado:
     </html>
     """
     
-    # 3. El nuevo botón de descarga
     st.download_button(
-        label="⬇️ Descargar Resumen",
+        label="⬇️ Descargar Archivo",
         data=plantilla_html,
-        file_name=f"Resumen_{materia.replace(' ', '_')}.html",
+        file_name=f"Analisis_{materia.replace(' ', '_')}.html",
         mime="text/html"
     )
     
