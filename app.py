@@ -60,8 +60,8 @@ tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"]
 
 with tab_subir:
     st.markdown("""
-    <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #17a2b8; margin-bottom: 15px;">
-        💡 <b>Tip de oro:</b> Te recomendamos grabar con el grabador de voz de tu celu y pasar el audio acá, o grabar la pantalla de tu compu y subir el video. ¡Es la forma más segura de no perder nada en clases largas!
+    <div style="background-color: transparent; padding: 12px; font-size: 10px; border-left: 4px solid #17a2b8; margin-bottom: 15px;">
+        💡 <b>Tip :</b> Te recomendamos grabar con el grabador de voz de tu celu antes de grabar audio desde la pagina
     </div>
     """, unsafe_allow_html=True)
     
@@ -162,4 +162,4 @@ if st.session_state.resumen_generado:
         mime="text/html"
     )
     
-    st.caption("💡 **Para guardarlo como PDF:** Hacé clic en descargar, abrí el archivo que se baja y ahí apretá `Ctrl + P` para 'Guardar como PDF'.")
+    st.caption("💡 **Para guardarlo como PDF:** Hacé clic en descargar archivo, abrí el archivo que se baja y ahí apretá `Ctrl + P` para 'Guardar como PDF'.")
