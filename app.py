@@ -60,19 +60,21 @@ st.markdown("---")
 tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"])
 
 with tab_subir:
-    # Único cartel de aviso, claro y al grano
+    # Agrupamos todo en un solo bloque para evitar el error de "removeChild"
     st.markdown("""
-    <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
-        ⚠️ <b>¡Atención con las clases largas!</b><br>
-        Si tu video dura <b>más de 1 hora</b>, por favor convertilo a MP3 antes de subirlo. Los videos pesados saturan el sistema y pueden dar error.
-        <br><a href="https://cloudconvert.com/mp4-to-mp3" target="_blank" style="color: #60a5fa; text-decoration: none;">🔗 Clic acá para convertir video a MP3 gratis</a>
-    </div>
-    <div style="background-color: transparent; padding: 12px; font-size: 13px; border-left: 4px solid #17a2b8; margin-bottom: 15px; color: #a0aab2;">
-        💡 <b>Tip:</b> Para grabar clases enteras, lo más seguro es usar la grabadora de voz de tu celu y subir el audio directamente acá.
+    <div style="background-color: transparent; border-radius: 8px;">
+        <div style="padding: 12px; font-size: 14px; border-left: 4px solid #ffc107; margin-bottom: 10px;">
+            ⚠️ <b>¡Atención con las clases largas!</b><br>
+            Si tu video dura <b>más de 1 hora</b>, por favor convertilo a MP3 antes de subirlo. Los videos pesados saturan el sistema y pueden dar error.
+            <br><a href="https://cloudconvert.com/mp4-to-mp3" target="_blank" style="color: #60a5fa; text-decoration: none;">🔗 Clic acá para convertir video a MP3 gratis</a>
+        </div>
+        <div style="padding: 12px; font-size: 13px; border-left: 4px solid #17a2b8; margin-bottom: 15px; color: #a0aab2;">
+            💡 <b>Tip:</b> Para grabar clases enteras, lo más seguro es usar la grabadora de voz de tu celu y subir el audio directamente acá.
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    archivo_subido = st.file_uploader("📂 Subí un archivo desde tu equipo", type=["mp3", "mp4", "m4a", "wav"])
+    archivo_subido = st.file_uploader("📂 Subí un archivo desde tu equipo", type=["mp3", "mp4", "m4a", "wav"], key="uploader_file")
 
 with tab_grabar:
     st.markdown("""
