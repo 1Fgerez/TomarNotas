@@ -7,19 +7,21 @@ from google import genai
 # Configuración básica de la página
 st.set_page_config(page_title="Resumidor de Clases", page_icon="📚")
 
+# --- LA MAGIA: INICIALIZAR LA MEMORIA DE LA APP ---
+if "resumen_generado" not in st.session_state:
+    st.session_state.resumen_generado = None
+
 st.title("📚 Resumidor de Clases con IA")
 st.markdown("Subí el audio o video de tu clase y obtené los apuntes clave en segundos.")
-
 st.markdown("---")
 
-# 1. El "Peaje" de la API Key (Traé tu propia llave)
+# 1. El "Peaje" de la API Key
 api_key_usuario = st.text_input(
     "🔑 Pegá tu API Key de Google acá:", 
     type="password", 
     help="Es gratis. Se usa solo durante esta sesión para generar tu resumen."
 )
 
-# Ventana desplegable con el instructivo
 with st.expander("❓ ¿Cómo encontrar o crear tu API Key gratuita?"):
     st.markdown("""
     1. Entrá a [Google AI Studio](https://aistudio.google.com/app/apikey).
@@ -39,7 +41,6 @@ st.markdown("---")
 
 # 4. El motor de la app
 if st.button("🚀 Generar Resumen"):
-    # Validaciones antes de arrancar
     if not api_key_usuario:
         st.warning("⚠️ Necesitás ingresar una API Key para continuar.")
     elif not materia:
@@ -48,18 +49,15 @@ if st.button("🚀 Generar Resumen"):
         st.warning("⚠️ Por favor subí un archivo de la clase.")
     else:
         try:
-            # Inicializar Gemini con la llave que puso el usuario
             client = genai.Client(api_key=api_key_usuario)
             
-            # Crear archivo temporal
             with st.spinner("Preparando archivo..."):
                 extension = archivo_subido.name.split('.')[-1]
                 with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmp_file:
                     tmp_file.write(archivo_subido.getvalue())
                     ruta_temp = tmp_file.name
 
-            # Subir a Google
-            with st.spinner("☁️ Subiendo a la nube de Google (puede tardar un ratito dependiendo del peso del archivo)..."):
+            with st.spinner("☁️ Subiendo a la nube de Google (puede tardar un ratito)..."):
                 archivo_gemini = client.files.upload(file=ruta_temp)
 
                 while archivo_gemini.state.name == 'PROCESSING':
@@ -70,7 +68,6 @@ if st.button("🚀 Generar Resumen"):
                     st.error("Hubo un error al procesar el archivo en Google.")
                     st.stop()
 
-            # Generar el resumen
             with st.spinner("🧠 El agente está escuchando y redactando los apuntes..."):
                 prompt = f"""
                 Sos un asistente de estudio universitario experto. Analizá esta grabación de la clase de la materia {materia}.
@@ -89,22 +86,27 @@ if st.button("🚀 Generar Resumen"):
                 
             st.success("¡Resumen listo!")
             
-            # Mostrar el resultado final en la página web
-            st.markdown("### 📋 Tu Resumen:")
-            st.info(response.text)
+            # --- GUARDAMOS EL TEXTO EN LA MEMORIA DE LA PÁGINA ---
+            st.session_state.resumen_generado = response.text
             
-            # --- NUEVO: Botón de descarga ---
-            st.download_button(
-                label="⬇️ Descargar Resumen en Markdown",
-                data=response.text,
-                file_name=f"Resumen_{materia.replace(' ', '_')}.md",
-                mime="text/markdown"
-            )
-            
-            # Limpieza: Borrar rastros para no ocupar espacio
             client.files.delete(name=archivo_gemini.name)
             os.remove(ruta_temp)
             
         except Exception as e:
-            # Manejo de errores amigable
-            st.error(f"Ups, ocurrió un error: Asegurate de que tu API Key sea correcta o intentá de nuevo. (Detalle técnico: {e})")
+            st.error(f"Ups, ocurrió un error. Asegurate de que tu API Key sea correcta. (Detalle: {e})")
+
+# --- MOSTRAR EL RESUMEN Y EL BOTÓN (Solo si hay algo en la memoria) ---
+if st.session_state.resumen_generado:
+    st.markdown("### 📋 Tu Resumen:")
+    st.info(st.session_state.resumen_generado)
+    
+    # Al apretar esto, Streamlit reinicia la app, pero como el texto está en session_state, no se borra
+    st.download_button(
+        label="⬇️ Descargar Resumen (.txt)",
+        data=st.session_state.resumen_generado,
+        file_name=f"Resumen_{materia.replace(' ', '_')}.txt",
+        mime="text/plain"
+    )
+    
+    # El tip de oro para el PDF
+    st.caption("💡 **Tip para tener un PDF hermoso:** Apretá `Ctrl + P` (o Cmd + P) en tu teclado y elegí la opción 'Guardar como PDF' en tu navegador. ¡Te guarda la página con todos los colores y el formato perfecto!")
