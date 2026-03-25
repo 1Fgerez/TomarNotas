@@ -16,31 +16,28 @@ st.title("📚 Analizador de Audio y Video")
 st.markdown("Subí el audio/video de lo que quieras y obtené un breve resumen.")
 st.markdown("---")
 
-# --- AJUSTE VISUAL: Usamos columnas para que los recuadros no ocupen todo el ancho ---
-col1, col2 = st.columns([1.5, 1]) # La columna 1 es más ancha, la 2 queda vacía de relleno
+# --- 1. El "Peaje" de la API Key (AHORA RESALTA MÁS) ---
+st.markdown("### 🔑 Paso 1: Tu Clave de Acceso")
+api_key_usuario = st.text_input(
+    "Pegá tu API Key de Google acá para habilitar el agente:", 
+    type="password", 
+    help="Es gratis. Se usa solo durante esta sesión para generar tu análisis."
+)
 
-with col1:
-    # 1. El "Peaje" de la API Key
-    api_key_usuario = st.text_input(
-        "🔑 Pegá tu API Key de Google acá:", 
-        type="password", 
-        help="Es gratis. Se usa solo durante esta sesión para generar tu análisis."
-    )
-    
-    with st.expander("❓ ¿Cómo encontrar o crear tu API Key gratuita?"):
-        st.markdown("""
-        1. Entrá a [Google AI Studio](https://aistudio.google.com/app/apikey).
-        2. Iniciá sesión con tu cuenta de Google (no pide tarjeta de crédito).
-        3. Hacé clic en el botón azul **'Create API key'**.
-        4. Copiá esa clave larga y pegala en el recuadro de arriba. 
-        """)
-    
-    st.markdown("<br>", unsafe_allow_html=True) # Un pequeño espacio visual
-    
-    # 2. Datos del tema
-    materia = st.text_input("📝 ¿De qué tema es el video o el audio?")
+with st.expander("¿No tenés una API Key? Tocá acá para ver cómo crearla gratis"):
+    st.markdown("""
+    1. Entrá a [Google AI Studio](https://aistudio.google.com/app/apikey).
+    2. Iniciá sesión con tu cuenta de Google (no pide tarjeta de crédito).
+    3. Hacé clic en el botón azul **'Create API key'**.
+    4. Copiá esa clave larga y pegala en el recuadro de arriba. 
+    """)
 
-# 3. Instrucciones personalizables (Este lo dejamos ancho porque lleva más texto)
+st.markdown("<br>", unsafe_allow_html=True) # Un pequeño espacio visual
+
+# 2. Datos del tema
+materia = st.text_input("📝 ¿De qué tema es el video o el audio?")
+
+# 3. Instrucciones personalizables
 prompt_por_defecto = """Generá un resumen detallado, claro y estructurado en formato Markdown con las siguientes secciones:
 1. **Tema Principal**: Un párrafo resumen general.
 2. **Puntos Clave**: Los conceptos más importantes explicados de forma sencilla.
@@ -56,11 +53,10 @@ instrucciones = st.text_area(
 st.caption("💡 **Aclaración:** Podés cambiar este recuadro para que genere lo que desees. Otro ejemplo podría ser pedirle que solo te haga un resumen de fórmulas, etc.  \n📝 **Tip de formato:** Utilizá `** **` para destacar los títulos o palabras clave (Ej: **Título**).")
 st.markdown("---")
 
-# --- 4. Opciones de entrada (Pestañas) ---
+# --- 4. Opciones de entrada (Carteles con fondo transparente) ---
 tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"])
 
 with tab_subir:
-    # Cartelito integrado al fondo
     st.markdown("""
     <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #17a2b8; margin-bottom: 15px;">
         💡 <b>Tip de oro:</b> Te recomendamos grabar con el grabador de voz de tu celu y pasar el audio acá, o grabar la pantalla de tu compu y subir el video. ¡Es la forma más segura de no perder nada en clases largas!
@@ -70,7 +66,6 @@ with tab_subir:
     archivo_subido = st.file_uploader("📂 Subí un archivo desde tu equipo", type=["mp3", "mp4", "m4a", "wav"])
 
 with tab_grabar:
-    # Cartelito integrado al fondo
     st.markdown("""
     <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
         ⚠️ <b>Aviso importante:</b> Usá esta opción solo para audios CORTOS. Si apagás la pantalla del celu o cambiás de app, el navegador cortará la grabación por seguridad.
@@ -126,7 +121,6 @@ if st.button("🚀 Procesar Archivo"):
                 
             st.success("¡Análisis listo!")
             
-            # GUARDAMOS EL TEXTO EN LA MEMORIA DE LA PÁGINA
             st.session_state.resumen_generado = response.text
             
             client.files.delete(name=archivo_gemini.name)
@@ -142,7 +136,6 @@ if st.session_state.resumen_generado:
     st.markdown(st.session_state.resumen_generado)
     st.markdown("---")
     
-    # LA MAGIA DEL HTML PARA EL PDF
     texto_html = markdown.markdown(st.session_state.resumen_generado)
     
     plantilla_html = f"""
