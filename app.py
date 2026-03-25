@@ -1,4 +1,5 @@
 import streamlit as st
+import markdown
 import time
 import os
 import tempfile
@@ -95,18 +96,41 @@ if st.button("🚀 Generar Resumen"):
         except Exception as e:
             st.error(f"Ups, ocurrió un error. Asegurate de que tu API Key sea correcta. (Detalle: {e})")
 
-# --- MOSTRAR EL RESUMEN Y EL BOTÓN (Solo si hay algo en la memoria) ---
+# --- MOSTRAR EL RESUMEN Y EL BOTÓN ---
 if st.session_state.resumen_generado:
     st.markdown("### 📋 Tu Resumen:")
-    st.info(st.session_state.resumen_generado)
     
-    # Al apretar esto, Streamlit reinicia la app, pero como el texto está en session_state, no se borra
+    # Cambiamos st.info por st.markdown para que se vea mucho mejor en la pantalla de la página
+    st.markdown(st.session_state.resumen_generado)
+    
+    st.markdown("---")
+    
+    # --- LA MAGIA DEL HTML PARA EL PDF ---
+    # 1. Traducimos los ## y ** a formato web real
+    texto_html = markdown.markdown(st.session_state.resumen_generado)
+    
+    # 2. Le ponemos un poco de diseño (letra Arial, márgenes prolijos)
+    plantilla_html = f"""
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; margin: 40px auto; max-width: 800px; padding: 20px; color: #333; }}
+            h1, h2, h3 {{ color: #1a73e8; }}
+        </style>
+    </head>
+    <body>
+        {texto_html}
+    </body>
+    </html>
+    """
+    
+    # 3. El nuevo botón de descarga
     st.download_button(
-        label="⬇️ Descargar Resumen (.txt)",
-        data=st.session_state.resumen_generado,
-        file_name=f"Resumen_{materia.replace(' ', '_')}.txt",
-        mime="text/plain"
+        label="⬇️ Descargar Resumen (Formato Web/PDF)",
+        data=plantilla_html,
+        file_name=f"Resumen_{materia.replace(' ', '_')}.html",
+        mime="text/html"
     )
     
-    # El tip de oro para el PDF
-    st.caption("💡 **Tip para tener un PDF hermoso:** Apretá `Ctrl + P` (o Cmd + P) en tu teclado y elegí la opción 'Guardar como PDF' en tu navegador. ¡Te guarda la página con todos los colores y el formato perfecto!")
+    st.caption("💡 **Para guardarlo como PDF:** Hacé clic en descargar, abrí el archivo que se baja (se va a abrir en tu navegador súper prolijo) y ahí apretá `Ctrl + P` para 'Guardar como PDF'. ¡Queda perfecto!")
