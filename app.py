@@ -47,11 +47,21 @@ instrucciones = st.text_area(
     height=150
 )
 
-# --- NUEVO: La aclaración y el tip de formato que sumaste ---
 st.caption("💡 **Aclaración:** Puedes cambiar este recuadro para que genere lo que desees. Otro ejemplo podría ser pedirle que solo te haga un resumen de fórmulas, etc.  \n📝 **Tip de formato:** Utilizá `** **` para destacar los títulos o palabras clave (Ej: **Título**).")
+st.markdown("---")
 
-# 4. El botón para subir el archivo
-archivo_subido = st.file_uploader("📂 Subí el archivo", type=["mp3", "mp4", "m4a", "wav"])
+# --- NUEVO: 4. Opciones de entrada (Pestañas) ---
+tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"])
+
+with tab_subir:
+    archivo_subido = st.file_uploader("📂 Subí un archivo desde tu equipo", type=["mp3", "mp4", "m4a", "wav"])
+
+with tab_grabar:
+    st.info("Ideal para grabar una explicación en el momento o una nota de voz rápida.")
+    audio_grabado = st.audio_input("🔴 Tocá para grabar")
+
+# Lógica para saber qué archivo vamos a usar (le damos prioridad a la grabación en vivo si existen los dos)
+archivo_final = audio_grabado if audio_grabado else archivo_subido
 
 st.markdown("---")
 
@@ -63,16 +73,18 @@ if st.button("🚀 Procesar Archivo"):
         st.warning("⚠️ Por favor ingresá de qué tema trata el archivo.")
     elif not instrucciones:
         st.warning("⚠️ Las instrucciones para la IA no pueden estar vacías.")
-    elif not archivo_subido:
-        st.warning("⚠️ Por favor subí un archivo.")
+    elif not archivo_final:
+        st.warning("⚠️ Por favor subí un archivo o grabá un audio.")
     else:
         try:
             client = genai.Client(api_key=api_key_usuario)
             
             with st.spinner("Preparando archivo..."):
-                extension = archivo_subido.name.split('.')[-1]
+                # Capturamos la extensión (Streamlit suele devolver .wav para audios grabados)
+                extension = archivo_final.name.split('.')[-1] if hasattr(archivo_final, 'name') else 'wav'
+                
                 with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmp_file:
-                    tmp_file.write(archivo_subido.getvalue())
+                    tmp_file.write(archivo_final.getvalue())
                     ruta_temp = tmp_file.name
 
             with st.spinner("☁️ Subiendo a la nube de Google (puede tardar un ratito)..."):
