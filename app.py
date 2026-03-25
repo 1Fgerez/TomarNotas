@@ -54,7 +54,7 @@ archivo_a_procesar = None
 with tab_link:
     st.markdown("""
     <div style="background-color: transparent; padding: 12px; font-size: 14px; border-left: 4px solid #60a5fa; margin-bottom: 15px;">
-        ✅ <b>Opción recomendada para clases largas:</b> Pegá el link de YouTube o de Google Drive (asegurante de que el archivo de Drive sea público).
+        ✅ <b>Opción recomendada para videos largos:</b> Pegá el link de YouTube o de Google Drive (asegurante de que el archivo de Drive sea público).
     </div>
     """, unsafe_allow_html=True)
     url_usuario = st.text_input("🔗 Link del video o audio:")
@@ -62,7 +62,7 @@ with tab_link:
 with tab_subir:
     st.markdown("""
     <div style="background-color: transparent; padding: 12px; font-size: 13px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
-        ⚠️ <b>Aviso:</b> Si el video dura más de 1 hora, mejor pasalo a MP3 antes de subirlo.
+        ⚠️ <b>Aviso:</b> Si el video dura más de 1 hora, mejor pasalo a MP3 antes de subirlo o usar la opcion de link.
     </div>
     """, unsafe_allow_html=True)
     archivo_subido = st.file_uploader("📂 Elegí un archivo", type=["mp3", "mp4", "m4a", "wav"], key="uploader")
