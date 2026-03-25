@@ -6,14 +6,14 @@ import tempfile
 from google import genai
 
 # Configuración básica de la página
-st.set_page_config(page_title="Resumidor de Clases", page_icon="📚")
+st.set_page_config(page_title="Herramienta para resumenes", page_icon="📚")
 
 # --- LA MAGIA: INICIALIZAR LA MEMORIA DE LA APP ---
 if "resumen_generado" not in st.session_state:
     st.session_state.resumen_generado = None
 
 st.title("📚 Resumidor de Clases con IA")
-st.markdown("Subí el audio o video de tu clase y obtené los apuntes clave en segundos.")
+st.markdown("Subí el audio o video de lo que quieras y obtené un breve resumen.")
 st.markdown("---")
 
 # 1. El "Peaje" de la API Key
