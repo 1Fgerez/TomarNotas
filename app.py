@@ -13,7 +13,7 @@ if "resumen_generado" not in st.session_state:
     st.session_state.resumen_generado = None
 
 st.title("📚 Analizador de Audio y Video")
-st.markdown("Subí el audio o video de lo que quieras y obtené un breve resumen.")
+st.markdown("Subí el audio/video de lo que quieras y obtené un breve resumen.")
 st.markdown("---")
 
 # 1. El "Peaje" de la API Key
@@ -47,20 +47,21 @@ instrucciones = st.text_area(
     height=150
 )
 
-st.caption("💡 **Aclaración:** Puedes cambiar este recuadro para que genere lo que desees. Otro ejemplo podría ser pedirle que solo te haga un resumen de fórmulas, etc.  \n📝 **Tip de formato:** Utilizá `** **` para destacar los títulos o palabras clave (Ej: **Título**).")
+st.caption("💡 **Aclaración:** Podés cambiar este recuadro para que genere lo que desees. Otro ejemplo podría ser pedirle que solo te haga un resumen de fórmulas, etc.  \n📝 **Tip de formato:** Utilizá `** **` para destacar los títulos o palabras clave (Ej: **Título**).")
 st.markdown("---")
 
-# --- NUEVO: 4. Opciones de entrada (Pestañas) ---
+# --- 4. Opciones de entrada (Pestañas con los tips agregados) ---
 tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"])
 
 with tab_subir:
+    st.info("💡 **El mejor método para clases largas (Ej: 3 horas):** Usá la app 'Grabadora de Voz' que ya viene en tu celu. Podés grabar horas con la pantalla apagada sin perder nada, y después subís ese archivo acá. Te recomendamos formato AUDIO (.mp3 o .m4a) porque pesa muchísimo menos que un video.")
     archivo_subido = st.file_uploader("📂 Subí un archivo desde tu equipo", type=["mp3", "mp4", "m4a", "wav"])
 
 with tab_grabar:
-    st.info("Ideal para grabar una explicación en el momento o una nota de voz rápida.")
+    st.warning("⚠️ **Aviso importante:** Usá esta opción solo para grabaciones CORTAS (explicaciones rápidas de 10 o 15 minutos). Si apagás la pantalla del celu o cambiás de app, el navegador cortará la grabación por seguridad y perderás el audio.")
     audio_grabado = st.audio_input("🔴 Tocá para grabar")
 
-# Lógica para saber qué archivo vamos a usar (le damos prioridad a la grabación en vivo si existen los dos)
+# Lógica para saber qué archivo vamos a usar
 archivo_final = audio_grabado if audio_grabado else archivo_subido
 
 st.markdown("---")
@@ -80,7 +81,6 @@ if st.button("🚀 Procesar Archivo"):
             client = genai.Client(api_key=api_key_usuario)
             
             with st.spinner("Preparando archivo..."):
-                # Capturamos la extensión (Streamlit suele devolver .wav para audios grabados)
                 extension = archivo_final.name.split('.')[-1] if hasattr(archivo_final, 'name') else 'wav'
                 
                 with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmp_file:
