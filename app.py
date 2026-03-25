@@ -50,15 +50,27 @@ instrucciones = st.text_area(
 st.caption("💡 **Aclaración:** Podés cambiar este recuadro para que genere lo que desees. Otro ejemplo podría ser pedirle que solo te haga un resumen de fórmulas, etc.  \n📝 **Tip de formato:** Utilizá `** **` para destacar los títulos o palabras clave (Ej: **Título**).")
 st.markdown("---")
 
-# --- 4. Opciones de entrada (Pestañas con los tips agregados) ---
+# --- 4. Opciones de entrada (Pestañas con los carteles nuevos) ---
 tab_subir, tab_grabar = st.tabs(["📁 Subir Archivo", "🎙️ Grabar en Vivo"])
 
 with tab_subir:
-    st.info("💡 **El mejor método para clases largas (Ej: 3 horas):** Usá la app 'Grabadora de Voz' que ya viene en tu celu. Podés grabar horas con la pantalla apagada sin perder nada, y después subís ese archivo acá. Te recomendamos formato AUDIO (.mp3 o .m4a) porque pesa muchísimo menos que un video.")
+    # Cartelito personalizado más chico y estético
+    st.markdown("""
+    <div style="background-color: #e8f4f8; padding: 12px; border-radius: 8px; font-size: 14px; color: #0c5460; border-left: 4px solid #17a2b8; margin-bottom: 15px;">
+        💡 <b>Tip de oro:</b> Te recomendamos grabar con el grabador de voz de tu celu y pasar el audio acá, o grabar la pantalla de tu compu y subir el video. ¡Es la forma más segura de no perder nada en clases largas!
+    </div>
+    """, unsafe_allow_html=True)
+    
     archivo_subido = st.file_uploader("📂 Subí un archivo desde tu equipo", type=["mp3", "mp4", "m4a", "wav"])
 
 with tab_grabar:
-    st.warning("⚠️ **Aviso importante:** Usá esta opción solo para grabaciones CORTAS (explicaciones rápidas de 10 o 15 minutos). Si apagás la pantalla del celu o cambiás de app, el navegador cortará la grabación por seguridad y perderás el audio.")
+    # Cartelito de advertencia más sutil
+    st.markdown("""
+    <div style="background-color: #fff3cd; padding: 12px; border-radius: 8px; font-size: 14px; color: #856404; border-left: 4px solid #ffc107; margin-bottom: 15px;">
+        ⚠️ <b>Aviso importante:</b> Usá esta opción solo para audios CORTOS. Si apagás la pantalla del celu o cambiás de app, el navegador cortará la grabación por seguridad.
+    </div>
+    """, unsafe_allow_html=True)
+    
     audio_grabado = st.audio_input("🔴 Tocá para grabar")
 
 # Lógica para saber qué archivo vamos a usar
