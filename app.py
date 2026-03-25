@@ -16,23 +16,25 @@ st.title("📚 Analizador de Audio y Video")
 st.markdown("Subí el audio/video de lo que quieras y obtené un breve resumen.")
 st.markdown("---")
 
-# --- 1. El "Peaje" de la API Key (AHORA RESALTA MÁS) ---
-st.markdown("### 🔑 Paso 1: Tu Clave de Acceso")
+# 1. El "Peaje" de la API Key
 api_key_usuario = st.text_input(
-    "Pegá tu API Key de Google acá para habilitar el agente:", 
+    "🔑 Pegá tu API Key de Google acá:", 
     type="password", 
     help="Es gratis. Se usa solo durante esta sesión para generar tu análisis."
 )
 
-with st.expander("¿No tenés una API Key? Tocá acá para ver cómo crearla gratis"):
-    st.markdown("""
-    1. Entrá a [Google AI Studio](https://aistudio.google.com/app/apikey).
-    2. Iniciá sesión con tu cuenta de Google (no pide tarjeta de crédito).
-    3. Hacé clic en el botón azul **'Create API key'**.
-    4. Copiá esa clave larga y pegala en el recuadro de arriba. 
-    """)
-
-st.markdown("<br>", unsafe_allow_html=True) # Un pequeño espacio visual
+# Desplegable hecho a medida con letra más chica y sutil
+st.markdown("""
+<details style="margin-bottom: 15px; margin-top: -5px;">
+    <summary style="font-size: 13px; color: #a0aab2; cursor: pointer;">❓ ¿No tenés una API Key? Tocá acá para ver cómo crearla gratis</summary>
+    <div style="font-size: 13.5px; padding-top: 8px; padding-left: 15px; color: #d1d5db;">
+        1. Entrá a <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #60a5fa; text-decoration: none;">Google AI Studio</a>.<br>
+        2. Iniciá sesión con tu cuenta de Google (no pide tarjeta de crédito).<br>
+        3. Hacé clic en el botón azul <b>'Create API key'</b>.<br>
+        4. Copiá esa clave larga y pegala en el recuadro de arriba.
+    </div>
+</details>
+""", unsafe_allow_html=True)
 
 # 2. Datos del tema
 materia = st.text_input("📝 ¿De qué tema es el video o el audio?")
